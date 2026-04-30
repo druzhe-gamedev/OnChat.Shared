@@ -2,7 +2,7 @@
 
 public class MessagePacket : IPacket
 {
-    public PacketType PacketType = PacketType.MessagePacket;
+    public PacketType PacketType => PacketType.MessagePacket;
     public string UserId { get; set; }
     public string Message { get; set; }
 
