@@ -1,20 +1,10 @@
-﻿namespace OnChat.Shared;
+﻿using OnChat.Protocol;
 
-public class MessagePacket : IPacket
+namespace OnChat.Shared;
+
+[PacketId(PacketId.MessagePacket)]
+public class MessagePacket
 {
-    public PacketType PacketType => PacketType.MessagePacket;
     public string UserId { get; set; }
     public string Message { get; set; }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(UserId);
-        writer.Write(Message);
-    }
-
-    public void Deserialize(BinaryReader reader)
-    {
-        UserId = reader.ReadString();
-        Message = reader.ReadString();
-    }
 }
