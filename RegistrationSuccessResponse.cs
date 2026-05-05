@@ -3,4 +3,4 @@
 namespace OnChat.Shared;
 
 [PacketId(PacketId.RegistrationSuccess)]
-public record RegistrationSuccessResponse(Guid CorrelationId, string Description) : SuccessResponse(CorrelationId, Description);
+public record RegistrationSuccessfulResponse(Guid CorrelationId, string Description) : SuccessfulResponse(CorrelationId, Description);

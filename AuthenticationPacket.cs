@@ -3,4 +3,4 @@
 namespace OnChat.Shared;
 
 [PacketId(PacketId.AuthenticationPacket)]
-public record AuthenticationPacket(Guid CorrelationId, string Login, string Message) : BasePacket(CorrelationId);
+public record AuthenticationPacket(Guid CorrelationId, string Login, string Password) : BasePacket(CorrelationId);

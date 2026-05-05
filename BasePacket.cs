@@ -9,7 +9,7 @@ public abstract record BasePacket(Guid CorrelationId) : IPacket
 
 public abstract record Response(Guid CorrelationId, string Description) : BasePacket(CorrelationId);
 
-public abstract record SuccessResponse(Guid CorrelationId, string Description) : Response(CorrelationId, Description), ISuccessfulResponse
+public abstract record SuccessfulResponse(Guid CorrelationId, string Description) : Response(CorrelationId, Description), ISuccessfulResponse
 {
     public string Description { get; set; } = Description;
 }
