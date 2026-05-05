@@ -13,5 +13,12 @@ public abstract class Response : BasePacket
     public string Desciption { get; set; }
 }
 
-public abstract class SuccessResponse : Response, ISuccessfulRespone;
-public abstract class FailureResponse : Response, IFailureRespone;
+public abstract class SuccessResponse : Response, ISuccessfulResponse
+{
+    public string Description { get; set; }
+}
+
+public abstract class FailureResponse : Response, IFailureResponse
+{
+    public string Description { get; set; }
+}
