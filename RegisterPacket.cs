@@ -4,7 +4,7 @@ using OnChat.Protocol.Packets;
 namespace OnChat.Shared;
 
 [PacketId(PacketId.RegistrationPacket)]
-public class RegistrationPacket : IPacket
+public class RegistrationPacket : BasePacket
 {
     public string Nickname { get; set; }
     public string Login { get; set; }

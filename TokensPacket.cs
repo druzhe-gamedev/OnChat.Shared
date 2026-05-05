@@ -4,7 +4,7 @@ using OnChat.Protocol.Packets;
 namespace OnChat.Shared;
 
 [PacketId(PacketId.TokensPacket)]
-public class TokensPacket : IPacket
+public class TokensPacket : BasePacket
 {
     public string AccessToken { get; set; }
     public string RefreshToken { get; set; }

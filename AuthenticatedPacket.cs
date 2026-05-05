@@ -3,7 +3,7 @@ using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared;
 
-public abstract class AuthenticatedPacket : IPacket
+public abstract class AuthenticatedPacket : BasePacket
 {
     public string Token { get; set; }
 }
