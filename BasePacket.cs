@@ -5,5 +5,5 @@ namespace OnChat.Shared;
 
 public abstract class BasePacket : IPacket
 {
-    public Guid CorrelationId { get; }
+    public Guid CorrelationId { get; set; }
 }
