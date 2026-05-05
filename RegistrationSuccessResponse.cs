@@ -5,5 +5,5 @@ namespace OnChat.Shared;
 public class RegistrationSuccessResponse : ISuccessfulResponse
 {
     public Guid CorrelationId { get; set; }
-    public string Description { get; }
+    public string Description { get; set; }
 }
