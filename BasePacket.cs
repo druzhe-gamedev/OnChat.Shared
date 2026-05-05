@@ -7,3 +7,11 @@ public abstract class BasePacket : IPacket
 {
     public Guid CorrelationId { get; set; }
 }
+
+public abstract class Response : BasePacket
+{
+    public string Desciption { get; set; }
+}
+
+public abstract class SuccessResponse : Response, ISuccessfulRespone;
+public abstract class FailureResponse : Response, IFailureRespone;
