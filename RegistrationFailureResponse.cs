@@ -1,7 +1,6 @@
 ﻿using OnChat.Protocol;
-using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared;
 
 [PacketId(PacketId.RegistrationFailure)]
-public class RegistrationFailureResponse : FailureResponse;
+public record RegistrationFailureResponse(Guid CorrelationId, string Description) : FailureResponse(CorrelationId, Description);

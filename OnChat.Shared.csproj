@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\OnChat.Protocol\OnChat.Protocol.csproj" />
+    </ItemGroup>
+
 </Project>

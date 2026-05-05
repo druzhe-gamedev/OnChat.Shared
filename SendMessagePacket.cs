@@ -1,11 +1,6 @@
 ﻿using OnChat.Protocol;
-using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared;
 
 [PacketId(PacketId.SendMessagePacket)]
-public class SendMessagePacket : AuthenticatedPacket
-{
-    public string ReceiverId { get; set; }
-    public string Message { get; set; }
-}
+public record SendMessagePacket(Guid CorrelationId, string Token, string ReceiverId, string Message) : AuthenticatedPacket(CorrelationId, Token);

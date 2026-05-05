@@ -1,11 +1,6 @@
 ﻿using OnChat.Protocol;
-using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared;
 
 [PacketId(PacketId.TokensPacket)]
-public class TokensPacket : BasePacket
-{
-    public string AccessToken { get; set; }
-    public string RefreshToken { get; set; }
-}
+public record TokensPacket(Guid CorrelationId, string AccessToken, string RefreshToken) : BasePacket(CorrelationId);

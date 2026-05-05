@@ -1,18 +1,20 @@
-﻿using OnChat.Protocol;
-using OnChat.Protocol.Packets;
+﻿using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared;
 
-public abstract class BasePacket : IPacket
+public abstract record BasePacket(Guid CorrelationId) : IPacket
 {
-    public Guid CorrelationId { get; set; }
+    public Guid CorrelationId { get; set; } = CorrelationId;
 }
 
-public abstract class Response : BasePacket
+public abstract record Response(Guid CorrelationId, string Description) : BasePacket(CorrelationId);
+
+public abstract record SuccessResponse(Guid CorrelationId, string Description) : Response(CorrelationId, Description), ISuccessfulResponse
 {
-    public string Description { get; set; }
+    public string Description { get; set; } = Description;
 }
 
-public abstract class SuccessResponse : Response, ISuccessfulResponse;
-
-public abstract class FailureResponse : Response, IFailureResponse;
+public abstract record FailureResponse(Guid CorrelationId, string Description) : Response(CorrelationId, Description), IFailureResponse
+{
+    public string Description { get; set; } = Description;
+}
