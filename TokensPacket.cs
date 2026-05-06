@@ -3,4 +3,4 @@
 namespace OnChat.Shared;
 
 [PacketId(PacketId.TokensPacket)]
-public record TokensPacket(Guid CorrelationId, string AccessToken, string RefreshToken) : BasePacket(CorrelationId);
+public record TokensPacket(Guid CorrelationId, string AccessToken, string RefreshToken) : SuccessfulResponse(CorrelationId);
