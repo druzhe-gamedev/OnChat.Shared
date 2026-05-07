@@ -1,4 +1,5 @@
 ﻿using OnChat.Protocol;
+using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared.Auth;
 
