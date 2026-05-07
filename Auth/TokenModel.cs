@@ -1,3 +1,3 @@
 ﻿namespace OnChat.Shared.Auth;
 
-public record TokenModel(string token, DateTimeOffset expiresAt);
+public record TokenModel(string Token, DateTimeOffset ExpiresAt);
