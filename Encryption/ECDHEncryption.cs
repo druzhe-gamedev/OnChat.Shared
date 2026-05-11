@@ -61,5 +61,5 @@ public static class ECDHEncryption
 
     // todo salt
     private static byte[] DeriveEncryptionKey(byte[] sharedSecret) =>
-        HKDF.DeriveKey(HashAlgorithmName.SHA256, sharedSecret, 256);
+        HKDF.DeriveKey(HashAlgorithmName.SHA256, sharedSecret, 32);
 }
