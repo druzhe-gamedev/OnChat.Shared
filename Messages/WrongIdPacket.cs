@@ -3,5 +3,5 @@ using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared.Messages;
 
-[PacketId(PacketId.SendMessagePacket)]
+[PacketId(PacketId.WrongIdPacket)]
 public record WrongIdPacket(Guid CorrelationId, string Description) : FailureResponse(CorrelationId, Description);
