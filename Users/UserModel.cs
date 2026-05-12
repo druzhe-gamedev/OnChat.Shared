@@ -1,3 +1,3 @@
 ﻿namespace OnChat.Shared.Users;
 
-public record UserModel(string Username, byte[] PublicKey);
+public record UserModel(Guid UserId, string Username, byte[] PublicKey);
