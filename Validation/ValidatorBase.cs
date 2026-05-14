@@ -17,15 +17,15 @@ public class ValidatorBase<T> : IValidator<T> where T : BasePacket
         return ValidationResult.Success();
     }
 
-    public void AddConstraint<TV>(Expression<Func<T, TV>> extract, IConstraint<TV> constraint, string? description = "")
+    public void AddConstraint<TV>(Expression<Func<T, TV>> extract, IConstraint<TV> constraint, string? errorDescription = "")
     {
         string memberName = GetMemberName(extract);
         _constraintsChain.Add(packet =>
             constraint.IsValid(extract.Compile().Invoke(packet))
                 ? ValidationResult.Success()
-                : string.IsNullOrEmpty(description)
+                : string.IsNullOrEmpty(errorDescription)
                     ? ValidationResult.Error(constraint, memberName)
-                    : ValidationResult.Error(description)
+                    : ValidationResult.Error(errorDescription)
         );
     }
     private string GetMemberName<TV>(Expression<Func<T, TV>> expression)
