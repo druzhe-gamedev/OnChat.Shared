@@ -1,9 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using OnChat.Shared.Validation;
+using OnChat.Protocol.Packets;
 
 namespace OnChat.Shared.Auth.Validation;
 
-public partial class RegistrationValidator : ValidatorBase<RegistrationPacket>
+public partial class RegistrationValidator : ValidatorBase<RegistrationPacket, PacketId>
 {
     public static readonly LengthConstraint PasswordConstraint = new (new MinMaxValue<int>(5, 255));
     public static readonly LengthRegexConstraint<byte> LoginConstraint = new(
@@ -22,9 +23,9 @@ public partial class RegistrationValidator : ValidatorBase<RegistrationPacket>
 
     public RegistrationValidator()
     {
-        AddConstraint(packet => packet.Password, PasswordConstraint);
-        AddConstraint(packet => packet.Email, MailConstraint);
-        AddConstraint(packet => packet.Username, LoginConstraint);
-        AddConstraint(packet => packet.Age, new MinMaxConstraint<short>(new MinMaxValue<short>(14, 99)));
+        AddConstraint(packet => packet.Password, PasswordConstraint, PacketId.WrongPasswordPacket);
+        AddConstraint(packet => packet.Email, MailConstraint, PacketId.WrongMailPacket);
+        AddConstraint(packet => packet.Username, LoginConstraint, PacketId.WrongLoginPacket);
+        AddConstraint(packet => packet.Age, new MinMaxConstraint<short>(new MinMaxValue<short>(14, 99)), PacketId.WrongAgePacket);
     }
 }
