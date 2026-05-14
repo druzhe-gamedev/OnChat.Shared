@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace OnChat.Shared.Constants;
+namespace OnChat.Shared.Validation;
 
 public record MinMaxValue<T>(T Min, T Max) where T : INumber<T>
 {

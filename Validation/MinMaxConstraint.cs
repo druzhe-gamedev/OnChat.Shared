@@ -1,9 +1,11 @@
 ﻿using System.Numerics;
 
-namespace OnChat.Shared.Constants;
+namespace OnChat.Shared.Validation;
 
 public class MinMaxConstraint<T>(MinMaxValue<T> threshold) : IConstraint<T> where T : INumber<T>
 {
     public MinMaxValue<T> Threshold => threshold;
     public bool IsValid(T value) => value >= threshold.Min && value <= threshold.Max;
+
+    public string GetErrorMessage(string field) => $"{field} must be between {threshold.ToString("and")}";
 }
