@@ -6,8 +6,12 @@ namespace OnChat.Shared.Auth.Validation;
 public partial class RegistrationValidator : ValidatorBase<RegistrationPacket>
 {
     public static readonly LengthConstraint PasswordConstraint = new (new MinMaxValue<int>(5, 255));
-    public static readonly LengthRegexConstraint<byte> LoginConstraint = new (new MinMaxValue<byte>(3, 50), LoginRegex());
-    public static readonly LengthRegexConstraint<byte> MailConstraint = new (new MinMaxValue<byte>(3, 255), MailRegex());
+    public static readonly LengthRegexConstraint<byte> LoginConstraint = new(
+        new MinMaxValue<byte>(3, 50),
+        LoginRegex(),
+        "alphanumeric, _, -, ."
+    );
+    public static readonly MailConstraint<byte> MailConstraint = new (MailRegex());
 
     [GeneratedRegex("^[a-zA-Z0-9][a-zA-Z0-9._-]{2,47}[a-zA-Z0-9]$")]
     private static partial Regex LoginRegex();
