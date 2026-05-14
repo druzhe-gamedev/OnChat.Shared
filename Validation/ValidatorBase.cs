@@ -2,7 +2,7 @@
 
 namespace OnChat.Shared.Validation;
 
-public class ValidatorBase<T> : IValidator<T> where T : BasePacket
+public class ValidatorBase<T, TError> : IValidator<T> where T : BasePacket
 {
     private readonly List<Func<T, ValidationResult>> _constraintsChain = [];
     
@@ -10,22 +10,22 @@ public class ValidatorBase<T> : IValidator<T> where T : BasePacket
     {
         foreach (Func<T, ValidationResult> validation in _constraintsChain)
         {
-            if (validation.Invoke(packet) is ValidationResultError error)
+            if (validation.Invoke(packet) is ValidationResultError<TError> error)
                 return error;
         }
 
         return ValidationResult.Success();
     }
 
-    public void AddConstraint<TV>(Expression<Func<T, TV>> extract, IConstraint<TV> constraint, string? errorDescription = "")
+    public void AddConstraint<TV>(Expression<Func<T, TV>> extract, IConstraint<TV> constraint, TError errorCode, string? errorDescription = "")
     {
         string memberName = GetMemberName(extract);
         _constraintsChain.Add(packet =>
             constraint.IsValid(extract.Compile().Invoke(packet))
                 ? ValidationResult.Success()
                 : string.IsNullOrEmpty(errorDescription)
-                    ? ValidationResult.Error(constraint, memberName)
-                    : ValidationResult.Error(errorDescription)
+                    ? ValidationResult.Error(constraint, memberName, errorCode)
+                    : ValidationResult.Error(errorDescription, errorCode)
         );
     }
     private string GetMemberName<TV>(Expression<Func<T, TV>> expression)
