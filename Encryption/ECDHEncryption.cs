@@ -28,7 +28,7 @@ public static class ECDHEncryption
 
         aes.Encrypt(nonce, messageBytes, ciphertext, tag);
 
-        return new EncryptedMessage(ephemeralPublicKey, nonce, ciphertext, tag);
+        return new EncryptedMessage(ephemeralPublicKey, nonce, ciphertext, tag, DateTimeOffset.Now);
     }
     
     public static string DecryptMessage(EncryptedMessage message, byte[] recipientPrivateKey)
