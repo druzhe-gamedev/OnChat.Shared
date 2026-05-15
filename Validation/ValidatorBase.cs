@@ -2,7 +2,7 @@
 
 namespace OnChat.Shared.Validation;
 
-public class ValidatorBase<T, TError> : IValidator<T> where T : BasePacket
+public abstract class ValidatorBase<T, TError> : IValidator<T> where T : BasePacket
 {
     private readonly List<Func<T, ValidationResult>> _constraintsChain = [];
     
