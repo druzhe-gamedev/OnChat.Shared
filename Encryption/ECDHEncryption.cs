@@ -7,7 +7,7 @@ namespace OnChat.Shared.Encryption;
 // ReSharper disable once InconsistentNaming
 public static class ECDHEncryption
 {
-    public static EncryptedMessage EncryptMessage(IEnumerable<(Guid, byte[])> recipients, string message)
+    public static EncryptedMessage EncryptMessage(IEnumerable<(Guid, byte[])> recipients, Guid senderId, string message)
     {
         using ECDiffieHellman ephemeralEcdh = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
         byte[] ephemeralPublicKey = ephemeralEcdh.ExportSubjectPublicKeyInfo();
@@ -46,6 +46,7 @@ public static class ECDHEncryption
         }
 
         return new EncryptedMessage(
+            senderId,
             recipientsEntries.ToArray(),
             ephemeralPublicKey,
             nonce,
@@ -73,7 +74,7 @@ public static class ECDHEncryption
         byte[] encryptionKey = DeriveEncryptionKey(sharedSecret);
 
         byte[] messageKey = new byte[32];
-        using AesCcm wrappedAes = new(encryptionKey);
+        using AesGcm wrappedAes = new(encryptionKey);
         RecipientWrappedKey wrappedKey = recipient.WrappedKey;
         wrappedAes.Decrypt(wrappedKey.Nonce, wrappedKey.Ciphertext, wrappedKey.Tag, messageKey);
         
