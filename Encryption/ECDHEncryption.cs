@@ -7,45 +7,80 @@ namespace OnChat.Shared.Encryption;
 // ReSharper disable once InconsistentNaming
 public static class ECDHEncryption
 {
-    public static EncryptedMessage EncryptMessage(byte[] recipientKey, string message)
+    public static EncryptedMessage EncryptMessage(IEnumerable<(Guid, byte[])> recipients, string message)
     {
-        using ECDiffieHellman senderEcdh = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
-        byte[] ephemeralPublicKey = senderEcdh.ExportSubjectPublicKeyInfo();
+        using ECDiffieHellman ephemeralEcdh = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+        byte[] ephemeralPublicKey = ephemeralEcdh.ExportSubjectPublicKeyInfo();
 
-        using ECDiffieHellman recipientEcdh = ECDiffieHellman.Create();
-        recipientEcdh.ImportSubjectPublicKeyInfo(recipientKey, out _);
-        ECDiffieHellmanPublicKey recipientPublicKey = recipientEcdh.PublicKey;
-
-        byte[] sharedSecret = senderEcdh.DeriveKeyFromHash(recipientPublicKey, HashAlgorithmName.SHA256);
-        byte[] encryptionKey = DeriveEncryptionKey(sharedSecret);
-
+        byte[] messageKey = RandomNumberGenerator.GetBytes(32);
+        
         byte[] nonce = RandomNumberGenerator.GetBytes(12);
-
-        using AesGcm aes = new (encryptionKey);
-        byte[] messageBytes = Encoding.UTF8.GetBytes(message);
-        byte[] ciphertext = new byte[messageBytes.Length];
+        byte[] plaintext = Encoding.UTF8.GetBytes(message);
+        byte[] ciphertext = new byte[plaintext.Length];
         byte[] tag = new byte[16];
 
-        aes.Encrypt(nonce, messageBytes, ciphertext, tag);
+        using AesGcm aes = new(messageKey);
+        aes.Encrypt(nonce, plaintext, ciphertext, tag);
 
-        return new EncryptedMessage(ephemeralPublicKey, nonce, ciphertext, tag, DateTimeOffset.Now);
+        List<RecipientEntry> recipientsEntries = [];
+
+        foreach ((Guid id, byte[] publicKey) in recipients)
+        {
+            using ECDiffieHellman recipientEcdh = ECDiffieHellman.Create();
+            recipientEcdh.ImportSubjectPublicKeyInfo(publicKey, out _);
+            ECDiffieHellmanPublicKey recipientPublicKey = recipientEcdh.PublicKey;
+            
+            byte[] wrappedNonce = RandomNumberGenerator.GetBytes(12);
+            byte[] wrappedTag = new byte[16];
+            byte[] wrappedMessageKey = new byte[messageKey.Length];
+
+            byte[] sharedSecret = ephemeralEcdh.DeriveKeyFromHash(recipientPublicKey, HashAlgorithmName.SHA256);
+            byte[] derivedKey = DeriveEncryptionKey(sharedSecret);
+            
+            using AesGcm wrapAes = new(derivedKey);
+            wrapAes.Encrypt(wrappedNonce, messageKey, wrappedMessageKey, wrappedTag);
+
+            recipientsEntries.Add(
+                new RecipientEntry(id, new RecipientWrappedKey(wrappedNonce, wrappedMessageKey, wrappedTag))
+            );
+        }
+
+        return new EncryptedMessage(
+            recipientsEntries.ToArray(),
+            ephemeralPublicKey,
+            nonce,
+            ciphertext,
+            tag,
+            DateTimeOffset.Now
+        );
     }
     
-    public static string DecryptMessage(EncryptedMessage message, byte[] recipientPrivateKey)
+    public static string DecryptMessage(EncryptedMessage message, Guid userId, byte[] recipientPrivateKey)
     {
+         RecipientEntry? recipient = message.RecipientEntries.FirstOrDefault(recipient => recipient.UserId == userId);
+        
+        if (recipient == null)
+            return "Not a recipient";
+        
         using ECDiffieHellman recipientEcdh = ECDiffieHellman.Create();
         recipientEcdh.ImportPkcs8PrivateKey(recipientPrivateKey, out _);
 
-        using ECDiffieHellman senderEcdh = ECDiffieHellman.Create();
-        senderEcdh.ImportSubjectPublicKeyInfo(message.EphemeralPublicKey, out _);
-        ECDiffieHellmanPublicKey senderPublicKey = senderEcdh.PublicKey;
+        using ECDiffieHellman ephemeralEcdh = ECDiffieHellman.Create();
+        ephemeralEcdh.ImportSubjectPublicKeyInfo(message.EphemeralPublicKey, out _);
+        ECDiffieHellmanPublicKey ephemeralPublicKey = ephemeralEcdh.PublicKey;
 
-        byte[] sharedSecret = recipientEcdh.DeriveKeyFromHash(senderPublicKey, HashAlgorithmName.SHA256);
+        byte[] sharedSecret = recipientEcdh.DeriveKeyFromHash(ephemeralPublicKey, HashAlgorithmName.SHA256);
         byte[] encryptionKey = DeriveEncryptionKey(sharedSecret);
 
-        using AesGcm aes = new(encryptionKey);
+        byte[] messageKey = new byte[32];
+        using AesCcm wrappedAes = new(encryptionKey);
+        RecipientWrappedKey wrappedKey = recipient.WrappedKey;
+        wrappedAes.Decrypt(wrappedKey.Nonce, wrappedKey.Ciphertext, wrappedKey.Tag, messageKey);
+        
+        using AesGcm messageAes = new(messageKey);
         byte[] plainText = new byte[message.Ciphertext.Length];
-        aes.Decrypt(message.Nonce, message.Ciphertext, message.Tag, plainText);
+        messageAes.Decrypt(message.Nonce, message.Ciphertext, message.Tag, plainText);
+        
         return Encoding.UTF8.GetString(plainText);
     }
     
