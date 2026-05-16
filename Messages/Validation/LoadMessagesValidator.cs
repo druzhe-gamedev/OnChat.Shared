@@ -6,7 +6,7 @@ namespace OnChat.Shared.Messages.Validation;
 public class LoadMessagesValidator : ValidatorBase<LoadMessagesPacket, PacketId>
 {
     public readonly MinMaxConstraint<int> QuantityConstraint = new(new MinMaxValue<int>(0, 255));
-    public readonly MinMaxConstraint<int> PageConstraint = new(new MinMaxValue<int>(0, int.MaxValue));
+    public readonly MinMaxConstraint<int> PageConstraint = new(new MinMaxValue<int>(1, int.MaxValue));
     
     public LoadMessagesValidator()
     {
